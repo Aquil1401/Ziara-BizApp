@@ -543,14 +543,20 @@ export default function InvoicePage() {
             <div className="flex gap-4">
                <button 
                 onClick={() => downloadInvoicePDF({
-                   id: '',
+                   id: crypto.randomUUID(),
                    invoiceNumber,
                    date,
                    customerName,
+                   customerPhone,
                    customerAddress,
                    items,
+                   subtotal: totalTaxable,
+                   taxRate: items[0]?.taxRate || 0,
+                   taxAmount: totalTaxAmount,
                    total: grandTotal,
-                   status: 'draft'
+                   isInterState,
+                   status: 'draft',
+                   createdAt: new Date().toISOString()
                 })}
                 className="px-8 py-3 bg-emerald-600 text-white font-black rounded-xl hover:bg-emerald-700 transition-all flex items-center gap-3 shadow-[8px_8px_0px_rgba(5,150,105,0.2)] active:translate-x-1 active:translate-y-1 active:shadow-none"
               >
