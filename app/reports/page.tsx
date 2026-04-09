@@ -275,7 +275,7 @@ export default function Reports() {
               <XAxis dataKey="shortName" tick={{ fontSize: 11, fill: "#94a3b8", fontWeight: 600 }} axisLine={false} tickLine={false} interval={monthKeys.length > 10 ? 1 : 0} />
               <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v >= 1000 ? (v/1000).toFixed(0)+"k" : v}`} />
               <Tooltip
-                formatter={(v: number, name: string) => [`₹${v.toLocaleString()}`, name]}
+                formatter={(v: any, name: any) => [`₹${Number(v || 0).toLocaleString()}`, name]}
                 labelFormatter={l => {
                   const d = monthlyData.find(x => x.shortName === l);
                   return d?.name || l;
@@ -352,10 +352,10 @@ export default function Reports() {
           ) : (
             <ResponsiveContainer width="100%" height={260}>
               <PieChart>
-                <Pie data={topProducts} cx="50%" cy="50%" outerRadius={90} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={11}>
+                <Pie data={topProducts} cx="50%" cy="50%" outerRadius={90} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`} labelLine={false} fontSize={11}>
                   {topProducts.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                 </Pie>
-                <Tooltip formatter={(v: number) => `₹${v.toLocaleString()}`} contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0" }} />
+                <Tooltip formatter={(v: any) => `₹${Number(v || 0).toLocaleString()}`} contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0" }} />
               </PieChart>
             </ResponsiveContainer>
           )}
@@ -372,7 +372,7 @@ export default function Reports() {
                 <Pie data={expensePieData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} dataKey="value" nameKey="name" paddingAngle={3}>
                   {expensePieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[(i + 3) % PIE_COLORS.length]} />)}
                 </Pie>
-                <Tooltip formatter={(v: number) => `₹${v.toLocaleString()}`} contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0" }} />
+                <Tooltip formatter={(v: any) => `₹${Number(v || 0).toLocaleString()}`} contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0" }} />
                 <Legend wrapperStyle={{ fontSize: "12px", fontWeight: 600 }} />
               </PieChart>
             </ResponsiveContainer>
@@ -392,7 +392,7 @@ export default function Reports() {
               <XAxis dataKey="shortName" tick={{ fontSize: 11, fill: "#94a3b8", fontWeight: 600 }} axisLine={false} tickLine={false} interval={monthKeys.length > 10 ? 1 : 0} />
               <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} tickFormatter={v => `₹${v >= 1000 ? (v/1000).toFixed(0)+"k" : v}`} />
               <Tooltip
-                formatter={(v: number, name: string) => [`₹${v.toLocaleString()}`, name]}
+                formatter={(v: any, name: any) => [`₹${Number(v || 0).toLocaleString()}`, name]}
                 labelFormatter={l => { const d = monthlyData.find(x => x.shortName === l); return d?.name || l; }}
                 contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0" }}
               />

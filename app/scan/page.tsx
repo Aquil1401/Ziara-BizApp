@@ -199,6 +199,7 @@ export default function ScanBill() {
       taxRate,
       taxAmount,
       total,
+      isInterState: false,
       notes: notes || undefined,
       status: "paid",
       createdAt: new Date().toISOString(),
