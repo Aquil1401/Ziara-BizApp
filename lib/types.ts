@@ -16,6 +16,8 @@ export interface Product {
   // Purchase info
   costPrice?: number;
   sellingPrice?: number;
+  hsnCode?: string;
+  gstRate?: number;
   image?: string; // Base64 encoded image
   category?: string;
   createdAt?: string;

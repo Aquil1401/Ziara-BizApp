@@ -81,6 +81,8 @@ export default function InventoryPage() {
   const [batchNumber, setBatchNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [hsnCode, setHsnCode] = useState("");
+  const [gstRate, setGstRate] = useState("0");
   const [customFields, setCustomFields] = useState<{ key: string; value: string }[]>([]);
 
   const load = () => {
@@ -102,7 +104,7 @@ export default function InventoryPage() {
 
   const resetForm = () => {
     setName(""); setStock("0"); setUnit("Piece"); setCategory("General"); setSellingPrice(""); setCostPrice("");
-    setBatchNumber(""); setExpiryDate(""); setImage(null); setCustomFields([]); setEditingId(null);
+    setBatchNumber(""); setExpiryDate(""); setImage(null); setHsnCode(""); setGstRate("0"); setCustomFields([]); setEditingId(null);
     setShowForm(false); setShowAdvanced(false);
   };
 
@@ -132,9 +134,10 @@ export default function InventoryPage() {
     setMinStock(p.minStock?.toString() || "10"); setBuyingUnit(p.buyingUnit || "Carton");
     setConversionFactor(p.conversionFactor?.toString() || "1"); setBatchNumber(p.batchNumber || "");
     setExpiryDate(p.expiryDate || ""); setImage(p.image || null);
+    setHsnCode(p.hsnCode || ""); setGstRate(p.gstRate?.toString() || "0");
     const cf = p.customFields ? Object.entries(p.customFields).map(([key, value]) => ({ key, value })) : [];
     setCustomFields(cf);
-    setEditingId(p.id); setShowForm(true); setShowAdvanced(cf.length > 0 || !!p.expiryDate || !!p.batchNumber);
+    setEditingId(p.id); setShowForm(true); setShowAdvanced(cf.length > 0 || !!p.expiryDate || !!p.batchNumber || !!p.hsnCode || !!p.gstRate);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -196,6 +199,8 @@ export default function InventoryPage() {
       batchNumber: batchNumber || undefined,
       expiryDate: expiryDate || undefined,
       image: image || undefined,
+      hsnCode: hsnCode || undefined,
+      gstRate: parseFloat(gstRate) || 0,
       category,
       createdAt: editingId ? (existing?.createdAt || new Date().toISOString()) : new Date().toISOString(),
       customFields: Object.keys(cfObj).length > 0 ? cfObj : undefined,
@@ -396,6 +401,16 @@ export default function InventoryPage() {
                 <input type="number" step="1" value={minStock} onChange={e => setMinStock(e.target.value)} className="premium-input" />
               </div>
               <div>
+                <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-2">HSN/SAC Code</label>
+                <input value={hsnCode} onChange={e => setHsnCode(e.target.value)} placeholder="HSN Code" className="premium-input" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-2">GST Rate (%)</label>
+                <select value={gstRate} onChange={e => setGstRate(e.target.value)} className="premium-input appearance-none">
+                  {[0, 5, 12, 18, 28].map(r => <option key={r} value={r}>{r}%</option>)}
+                </select>
+              </div>
+              <div className="md:col-span-2 lg:col-span-1">
                 <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-2">Product Image</label>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
@@ -572,6 +587,8 @@ export default function InventoryPage() {
                           </div>
                           <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-[11px]">
                             <span className="text-slate-400 font-medium">Unit: {p.unit}</span>
+                            {p.hsnCode && <span className="text-slate-500 font-mono bg-slate-100 px-1 rounded text-[10px]">HSN: {p.hsnCode}</span>}
+                            {p.gstRate !== undefined && <span className="text-indigo-600 bg-indigo-50 px-1 rounded text-[10px] font-bold">{p.gstRate}% GST</span>}
                             {p.batchNumber && <span className="text-slate-500 font-mono bg-slate-100 px-1 rounded">Batch: {p.batchNumber}</span>}
                             {p.expiryDate && <span className={`font-medium ${expired ? "text-rose-500" : nearExpiry ? "text-amber-600" : "text-slate-500"}`}>Exp: {p.expiryDate}</span>}
                             {p.customFields && Object.entries(p.customFields).map(([k, v]) => (

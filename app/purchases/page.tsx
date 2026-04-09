@@ -73,7 +73,14 @@ export default function Purchases() {
     const products = getProducts();
     let product = products.find(p => p.name.toLowerCase() === productName.toLowerCase());
     if (!product) {
-      product = { id: Date.now().toString() + "_p", name: productName, stock: qty, createdAt: new Date().toISOString() };
+      product = { 
+        id: Date.now().toString() + "_p", 
+        name: productName, 
+        stock: qty, 
+        hsnCode: hsnCode || undefined,
+        gstRate: parseFloat(taxRate) || 0,
+        createdAt: new Date().toISOString() 
+      };
     } else {
       product.stock += qty;
     }
