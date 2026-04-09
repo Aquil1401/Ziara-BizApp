@@ -149,7 +149,7 @@ export default function Purchases() {
     setEditProductName(p.productName);
     setEditQuantity(p.quantity.toString());
     setEditCostPrice(p.costPrice.toString());
-    setEditTaxRate(p.taxRate.toString());
+    setEditTaxRate((p.taxRate || 0).toString());
     setEditHsnCode(p.hsnCode || "");
   };
 

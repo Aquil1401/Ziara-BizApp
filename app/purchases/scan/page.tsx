@@ -281,7 +281,7 @@ export default function PurchaseScan() {
                   <div className="col-span-6 md:col-span-1">
                     <label className="block text-[9px] font-black text-slate-300 uppercase tracking-tight mb-1 text-right">Total</label>
                     <div className="premium-input text-sm text-right font-black text-emerald-600 bg-slate-100/50 flex items-center justify-end px-3 min-h-[42px]">
-                      ₹{item.total?.toFixed(0)}
+                      ₹{(item.total || 0).toFixed(0)}
                     </div>
                   </div>
                   <button onClick={() => removeItem(idx)} className="col-span-12 md:col-span-1 flex justify-center text-rose-300 hover:text-rose-500 transition-colors md:pt-4">
