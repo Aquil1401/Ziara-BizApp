@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f8fafc;
+    --foreground: #0f172a;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  
+  .glass-nav {
+    @apply bg-white/80 backdrop-blur-md border-t border-slate-200/50 shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.05)];
+  }
+
+  .premium-card {
+    @apply bg-white rounded-2xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] border border-slate-100/80 transition-shadow duration-200 hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.08)];
+  }
+
+  .premium-input {
+    @apply w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 outline-none transition-all duration-200 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 font-medium;
+  }
+  
+  .premium-label {
+    @apply text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1.5 block;
+  }
+  
+  .premium-button-primary {
+    @apply w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 disabled:from-slate-400 disabled:to-slate-400 text-white font-semibold py-3.5 rounded-xl shadow-md shadow-indigo-500/20 transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98];
+  }
 }

@@ -1,0 +1,229 @@
+<>
+        {/* Print styles injected inline */}
+        <style>{`
+          @media print {
+            body * { visibility: hidden !important; }
+            #invoice-print, #invoice-print * { visibility: visible !important; }
+            #invoice-print { position: absolute; left: 0; top: 0; width: 100%; padding: 40px !important; }
+            .no-print { display: none !important; }
+          }
+        `}</style>
+        <div className="p-5 py-8 no-print">
+          <div className="flex items-center gap-4 mb-6">
+            <button onClick={() => setPreviewMode(false)} className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-semibold transition-colors">
+              <ArrowLeft size={18} /> Back to Editor
+            </button>
+            <div className="flex-1" />
+            <button onClick={() => handleSave("draft")} className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all">
+              Save as Draft
+            </button>
+            <button onClick={() => handleSave("sent")} className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all">
+              <CheckCircle size={16} className="inline mr-2" />Save & Send
+            </button>
+            <button onClick={handlePrint} className="px-6 py-2.5 premium-button-primary md:w-auto md:py-2.5">
+              <Printer size={16} className="inline mr-2" />Print / PDF
+            </button>
+          </div>
+        </div>
+
+        {/* Invoice Preview */}
+        <div id="invoice-print" ref={printRef} className="max-w-4xl mx-auto bg-white shadow-2xl p-0 border-[1.5px] border-slate-300 text-slate-900 font-serif leading-tight mx-4 md:mx-auto mb-20">
+          
+          {/* Main Title Block */}
+          <div className="border-b-[1.5px] border-slate-300 py-2 text-center bg-slate-50/50">
+            <h1 className="text-xl font-black uppercase tracking-[0.2em]">Tax Invoice</h1>
+            <p className="text-[10px] text-slate-500 font-sans italic lowercase mt-0.5">(Original Copy)</p>
+          </div>
+
+          {/* Header Grid */}
+          <div className="grid grid-cols-2 border-b-[1.5px] border-slate-300">
+            {/* Left: Seller Info */}
+            <div className="p-4 border-r-[1.5px] border-slate-300 space-y-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-indigo-900 text-white flex items-center justify-center font-black rounded-lg text-lg">
+                    {businessInfo.name.charAt(0).toUpperCase()}
+                  </div>
+                  <h2 className="text-lg font-black uppercase tracking-tight">{businessInfo.name}</h2>
+                </div>
+                <p className="text-[11px] leading-relaxed font-sans text-slate-600">
+                  {businessInfo.address}<br/>
+                  Mo.: {businessInfo.phone}<br/>
+                  E-Mail: {businessInfo.email}<br/>
+                  {businessInfo.gstin && <span className="font-bold text-slate-800">GSTIN: {businessInfo.gstin}</span>}
+                </p>
+            </div>
+            
+            {/* Right: Invoice Metadata */}
+            <div className="grid grid-cols-2 text-[10px] font-sans">
+              <div className="p-2 border-b border-r border-slate-300">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">Invoice No.</p>
+                <p className="font-black text-slate-900">{invoiceNumber}</p>
+              </div>
+              <div className="p-2 border-b border-slate-300">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">Dated</p>
+                <p className="font-black text-slate-900">{date}</p>
+              </div>
+              <div className="p-2 border-b border-r border-slate-300">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">Delivery Note</p>
+                <p className="font-bold text-slate-800">{deliveryNote || "—"}</p>
+              </div>
+              <div className="p-2 border-b border-slate-300">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">Mode/Terms of Payment</p>
+                <p className="font-bold text-slate-800">Immediate</p>
+              </div>
+              <div className="p-2 border-r border-slate-300">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">Buyer's Order No.</p>
+                <p className="font-bold text-slate-800">{orderNo || "—"}</p>
+              </div>
+              <div className="p-2">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">E-Way Bill No.</p>
+                <p className="font-black text-indigo-700">{eWayBillNo || "—"}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Buyer & Dispatch Row */}
+          <div className="grid grid-cols-2 border-b-[1.5px] border-slate-300">
+            <div className="p-4 border-r-[1.5px] border-slate-300">
+               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Buyer (Bill to)</p>
+               <h3 className="text-sm font-black text-slate-900 uppercase mb-1">{customerName || "—"}</h3>
+               <p className="text-[11px] leading-relaxed font-sans text-slate-600">
+                 {customerAddress || "No Address Provided"}<br/>
+                 Mo.: {customerPhone || "—"}<br/>
+                 <span className="font-bold text-slate-800">GSTIN: 27XYSBA1234Q1ZV</span>
+               </p>
+            </div>
+            <div className="grid grid-cols-2 text-[10px] font-sans">
+              <div className="p-2 border-b border-r border-slate-300">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">Dispatched through</p>
+                <p className="font-bold text-slate-800">{dispatchedThrough || "—"}</p>
+              </div>
+              <div className="p-2 border-b border-slate-300">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">Destination</p>
+                <p className="font-bold text-slate-800">{destination || "Local"}</p>
+              </div>
+              <div className="p-2 col-span-2">
+                <p className="text-slate-400 font-bold uppercase text-[8px] mb-0.5">Terms of Delivery</p>
+                <p className="text-[9px] text-slate-600">{termsOfDelivery || "Standard delivery terms apply."}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Items Table */}
+          <div className="min-h-[400px]">
+            <table className="w-full text-[11px] font-sans border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b-[1.5px] border-slate-300">
+                  <th className="p-2 border-r border-slate-300 w-10 text-center uppercase font-black">S.No</th>
+                  <th className="p-2 border-r border-slate-300 text-left uppercase font-black">Description of Goods</th>
+                  <th className="p-2 border-r border-slate-300 w-24 text-center uppercase font-black">HSN/SAC</th>
+                  <th className="p-2 border-r border-slate-300 w-16 text-center uppercase font-black">Qty</th>
+                  <th className="p-2 border-r border-slate-300 w-24 text-right uppercase font-black">Rate</th>
+                  <th className="p-2 border-r border-slate-300 w-16 text-center uppercase font-black">GST%</th>
+                  <th className="p-2 w-28 text-right uppercase font-black">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {items.map((item, idx) => (
+                  <tr key={item.id} className="min-h-[30px]">
+                    <td className="p-2 border-r border-slate-300 text-center font-medium text-slate-500">{idx + 1}</td>
+                    <td className="p-2 border-r border-slate-300 font-bold text-slate-900 uppercase tracking-tight">{item.description || "—"}</td>
+                    <td className="p-2 border-r border-slate-300 text-center font-mono text-slate-600 uppercase">{item.hsnCode || "—"}</td>
+                    <td className="p-2 border-r border-slate-300 text-center font-black">{item.quantity}</td>
+                    <td className="p-2 border-r border-slate-300 text-right font-medium">₹{(item.total / (1 + (item.taxRate || 0) / 100) / item.quantity).toFixed(2)}</td>
+                    <td className="p-2 border-r border-slate-300 text-center font-bold text-slate-500">{item.taxRate}%</td>
+                    <td className="p-2 text-right font-black">₹{item.total.toFixed(2)}</td>
+                  </tr>
+                ))}
+                {/* Spacer rows to maintain height */}
+                {Array.from({ length: Math.max(0, 8 - items.length) }).map((_, i) => (
+                  <tr key={`spacer-${i}`} className="h-8">
+                    <td className="border-r border-slate-200"></td>
+                    <td className="border-r border-slate-200"></td>
+                    <td className="border-r border-slate-200"></td>
+                    <td className="border-r border-slate-200"></td>
+                    <td className="border-r border-slate-200"></td>
+                    <td className="border-r border-slate-200"></td>
+                    <td></td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="border-t-[1.5px] border-slate-300 bg-slate-50/50 font-black">
+                <tr>
+                  <td colSpan={3} className="p-2 text-right border-r border-slate-300 uppercase">Total</td>
+                  <td className="p-2 text-center border-r border-slate-300">{items.reduce((s,i)=>s+i.quantity, 0)}</td>
+                  <td className="border-r border-slate-300"></td>
+                  <td className="border-r border-slate-300"></td>
+                  <td className="p-2 text-right text-indigo-700 font-black text-sm">₹{grandTotal.toFixed(2)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          {/* Amount in Words */}
+          <div className="p-3 border-t-[1.5px] border-slate-300 bg-slate-50/30">
+            <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Total Amount (in words)</p>
+            <p className="text-[11px] font-black text-slate-900 italic tracking-tight uppercase">Indian Rupee {amountToWords(grandTotal)}</p>
+          </div>
+
+          {/* GST Summary & Bank Details Section */}
+          <div className="grid grid-cols-2 border-t-[1.5px] border-slate-300">
+            {/* Left: GST Summary Table */}
+            <div className="p-3 border-r-[1.5px] border-slate-300">
+               <p className="text-[9px] font-black text-slate-400 uppercase mb-2">GST Summary</p>
+               <table className="w-full text-[9px] border-collapse border border-slate-200">
+                 <thead>
+                   <tr className="bg-slate-100/50">
+                     <th className="p-1 border border-slate-200 text-left">HSN/SAC</th>
+                     <th className="p-1 border border-slate-200 text-right">Taxable Value</th>
+                     <th className="p-1 border border-slate-200 text-right">Tax Rate</th>
+                     <th className="p-1 border border-slate-200 text-right">Tax Amount</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   {getTaxSummary().map((row, i) => (
+                     <tr key={i}>
+                       <td className="p-1 border border-slate-200 font-bold">{row.hsn}</td>
+                       <td className="p-1 border border-slate-200 text-right">₹{row.taxable.toFixed(2)}</td>
+                       <td className="p-1 border border-slate-200 text-right">{row.rate}%</td>
+                       <td className="p-1 border border-slate-200 text-right font-bold text-indigo-600">₹{row.tax.toFixed(2)}</td>
+                     </tr>
+                   ))}
+                 </tbody>
+                 <tfoot className="bg-slate-100/50 font-bold">
+                   <tr>
+                     <td className="p-1 border border-slate-200">Total</td>
+                     <td className="p-1 border border-slate-200 text-right">₹{totalTaxable.toFixed(2)}</td>
+                     <td className="p-1 border border-slate-200"></td>
+                     <td className="p-1 border border-slate-200 text-right font-black">₹{totalTaxAmount.toFixed(2)}</td>
+                   </tr>
+                 </tfoot>
+               </table>
+            </div>
+
+            {/* Right: Bank Details & Signature */}
+            <div className="flex flex-col">
+               <div className="p-3 border-b border-slate-300 flex-1">
+                 <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Company's Bank Details</p>
+                 <div className="space-y-1 text-[10px] text-slate-600 font-sans">
+                   <p><span className="font-bold text-slate-800">Bank Name:</span> {bankDetails.name}</p>
+                   <p><span className="font-bold text-slate-800">A/c No:</span> {bankDetails.accountNo}</p>
+                   <p><span className="font-bold text-slate-800">Branch & IFSC:</span> {bankDetails.branch} ({bankDetails.ifsc})</p>
+                 </div>
+               </div>
+               <div className="p-3 bg-slate-50/50 flex-1 text-right flex flex-col justify-between">
+                  <p className="text-[9px] font-black text-slate-400 uppercase">for {BUSINESS_NAME}</p>
+                  <div className="mt-8">
+                    <div className="w-32 h-px bg-slate-300 ml-auto mb-1"></div>
+                    <p className="text-[8px] font-black text-slate-400 uppercase">Authorized Signatory</p>
+                  </div>
+               </div>
+            </div>
+          </div>
+
+          {/* Footer Disclaimer */}
+          <div className="p-2 border-t-[1.5px] border-slate-300 text-center text-[8px] text-slate-400 font-sans italic">
+             SUBJECT TO LOCAL JURISDICTION. THIS IS A COMPUTER GENERATED INVOICE.
+          </div>
+          </div>
+        </>
