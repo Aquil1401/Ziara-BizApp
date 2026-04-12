@@ -4,21 +4,40 @@ import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
 import DataSync from "@/components/DataSync";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 const inter = Inter({ subsets: ["latin"], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
-  title: "Business Manager PWA",
-  description: "Personal Business Management for SMEs",
+  title: "Ziara BizApp — Business Manager",
+  description: "Offline-first business management — invoices, inventory, purchases, GST & more.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "BizApp",
+    startupImage: "/apple-touch-icon.png",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "msapplication-TileColor": "#4f46e5",
+    "msapplication-TileImage": "/icons/icon-144x144.png",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f8fafc",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#4f46e5" },
+    { media: "(prefers-color-scheme: dark)", color: "#4f46e5" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -46,6 +65,7 @@ export default function RootLayout({
         </div>
         <BottomNav />
         <DataSync />
+        <PWAInstallPrompt />
       </body>
     </html>
   );
