@@ -1,121 +1,24 @@
-import { GoogleGenAI } from '@google/genai';
-
-export interface ParsedBillItem {
-  description: string;
-  quantity: number;
-  rate: number;
-  taxRate?: number;
-  taxAmount?: number;
-  hsnCode?: string;
-  total: number;
-}
-
-export interface ParsedBill {
-  invoiceNumber?: string;
-  date?: string;
-  customerName?: string;
-  customerAddress?: string;
-  customerPhone?: string;
-  supplier?: string;
-  items: ParsedBillItem[];
-  subtotal?: number;
-  taxAmount?: number;
-  grandTotal?: number;
-  notes?: string;
-}
-
-const getGenAI = () => {
-  const key = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-  if (!key) return null;
-  return new GoogleGenAI({ apiKey: key });
-};
+// Server side API route used instead to protect API key
 
 /**
  * Parses a bill file (image, PDF, or Word) using Gemini.
  * Accepts a base64 data URL.
  */
 export const parseBillFileWithAI = async (fileDataUrl: string): Promise<ParsedBill | null> => {
-  const ai = getGenAI();
-
-  if (!ai) {
-    console.warn('Gemini API key not configured. Cannot parse file without AI.');
-    return null;
-  }
-
-  // Extract mime type and base64 data from data URL
-  const matches = fileDataUrl.match(/^data:([a-zA-Z0-9+/.-]+\/[a-zA-Z0-9+/.-]+);base64,(.+)$/);
-  if (!matches) {
-    console.error('Invalid file data URL format');
-    return null;
-  }
-  const mimeType = matches[1];
-  const base64Data = matches[2];
-
-  const prompt = `You are an expert at reading invoices, sales bills, and receipts (images, PDFs, or Word documents) with a focus on Indian Taxation (GST).
-  
-Look carefully at this document and extract ALL information visible. If it is a PDF or Word document, read all pages if applicable.
-
-Return ONLY a valid JSON object (no markdown, no code fences, no explanation) with this EXACT structure:
-{
-  "invoiceNumber": "string or null",
-  "date": "YYYY-MM-DD format or null",
-  "customerName": "customer or buyer name or null",
-  "customerAddress": "customer address or location or null",
-  "customerPhone": "customer phone number or null",
-  "supplier": "supplier or seller name or null",
-  "items": [
-    {
-      "description": "product name exactly as written",
-      "hsnCode": "HSN/SAC code if visible or null",
-      "quantity": number,
-      "rate": number,
-      "taxRate": number (e.g. 18 for 18% GST),
-      "taxAmount": number,
-      "total": number (including tax)
-    }
-  ],
-  "subtotal": number (before tax),
-  "taxAmount": number (total tax amount),
-  "grandTotal": number or null,
-  "notes": "any additional remarks ONLY"
-}
-
-IMPORTANT rules for GST extraction:
-- Look for "HSN", "SAC", "GST%", "IGST", "CGST", "SGST".
-- taxRate should be the total GST percentage (e.g., if CGST 9% and SGST 9%, taxRate is 18).
-- Extract HSN code for each item if mentioned.
-- If individual tax is not mentioned but a total GST is shown, divide it proportionally among items or use the total fields.
-
-IMPORTANT layout rules for Indian handwritten bills:
-- The FIRST line often has a bill/invoice number (e.g. "173") and a date.
-- The SECOND line is the CUSTOMER NAME — extract this exactly.
-- The THIRD line is the CUSTOMER ADDRESS.
-- nouns should ONLY contain genuine extra remarks.
-- Extract ALL line items visible in the bill.
-- For Indian bills, "110/-" means 110 rupees.
-- If quantity is not written, default to 1.
-- Today's date if none found: ${new Date().toISOString().split('T')[0]}`;
-
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            {
-              inlineData: {
-                mimeType,
-                data: base64Data,
-              },
-            },
-            { text: prompt },
-          ],
-        },
-      ],
+    const response = await fetch('/api/parse-bill', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileDataUrl, prompt })
     });
 
-    let resText = response.text || '{}';
+    const data = await response.json();
+    if (!response.ok || !data.result) {
+      console.error('API Parse Error:', data.error);
+      return null;
+    }
+
+    let resText = data.result || '{}';
     resText = resText.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
 
     const parsed = JSON.parse(resText) as ParsedBill;
@@ -158,13 +61,6 @@ IMPORTANT layout rules for Indian handwritten bills:
  * Legacy text-based parser — used as a fallback when no image is available.
  */
 export const parseBillTextWithAI = async (text: string): Promise<ParsedBill | null> => {
-  const ai = getGenAI();
-
-  if (!ai) {
-    console.warn('Gemini API key not configured. Falling back to regex.');
-    return fallbackParse(text);
-  }
-
   try {
     const prompt = `You are an expert at reading handwritten invoices, sales bills, and receipts from small businesses — especially Indian wholesale/FMCG businesses.
 
@@ -197,17 +93,20 @@ Rules:
 - If a number appears twice side by side (like "110/- 110/-"), that's rate and total
 - "DD Sale", "Sale", "Purchase" in the header indicates the bill type
 - Ignore stamps, watermarks, decorative elements
-- Today's date if none found: ${new Date().toISOString().split('T')[0]}
+- Today's date if none found: ${new Date().toISOString().split('T')[0]}`;
 
-Bill text:
-${text}`;
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
+    const response = await fetch('/api/parse-bill', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ textData: text, prompt })
     });
 
-    let resText = response.text || '{}';
+    const data = await response.json();
+    if (!response.ok || !data.result) {
+        return fallbackParse(text);
+    }
+
+    let resText = data.result || '{}';
     resText = resText.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
 
     const parsed = JSON.parse(resText) as ParsedBill;
@@ -229,7 +128,7 @@ ${text}`;
 
     return parsed;
   } catch (error) {
-    console.error('AI Parse Error:', error);
+    console.error('Fetch Parse Error:', error);
     return fallbackParse(text);
   }
 };
