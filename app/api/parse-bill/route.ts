@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     if (fileDataUrl) {
       // Extract mimeType and raw base64 from the data URL
-      const matches = fileDataUrl.match(/^data:([a-zA-Z0-9+/.\-]+\/[a-zA-Z0-9+/.\-]+);base64,(.+)$/s);
+      const matches = fileDataUrl.match(/^data:([a-zA-Z0-9+/.\-]+\/[a-zA-Z0-9+/.\-]+);base64,([\s\S]+)$/);
       if (!matches) {
         return NextResponse.json({ error: 'Invalid file data URL format' }, { status: 400 });
       }
