@@ -364,9 +364,9 @@ export default function ScanBill() {
                   {/* Column headers */}
                   <div className="hidden md:grid grid-cols-12 gap-2 px-1 mb-2">
                     <p className="col-span-4 text-xs font-bold tracking-wider text-slate-400 uppercase">Item</p>
-                    <p className="col-span-2 text-xs font-bold tracking-wider text-slate-400 uppercase">HSN</p>
+                    <p className="col-span-1 text-xs font-bold tracking-wider text-slate-400 uppercase">HSN</p>
                     <p className="col-span-2 text-xs font-bold tracking-wider text-slate-400 uppercase text-center">Qty</p>
-                    <p className="col-span-1 text-xs font-bold tracking-wider text-slate-400 uppercase text-right">Rate</p>
+                    <p className="col-span-2 text-xs font-bold tracking-wider text-slate-400 uppercase text-right">Rate</p>
                     <p className="col-span-2 text-xs font-bold tracking-wider text-slate-400 uppercase text-right">Total</p>
                     <p className="col-span-1"></p>
                   </div>
@@ -387,7 +387,7 @@ export default function ScanBill() {
                           type="text" value={item.hsnCode || ""}
                           onChange={e => updateItem(item.id, "hsnCode", e.target.value)}
                           placeholder="HSN"
-                          className="col-span-4 md:col-span-2 premium-input bg-white text-sm py-2 px-3"
+                          className="col-span-4 md:col-span-1 premium-input bg-white text-sm py-2 px-3"
                         />
                         <input
                           type="number" value={item.quantity} min="0.01" step="0.01"
@@ -397,7 +397,7 @@ export default function ScanBill() {
                         <input
                           type="number" value={item.rate} min="0" step="0.01"
                           onChange={e => updateItem(item.id, "rate", parseFloat(e.target.value) || 0)}
-                          className="col-span-4 md:col-span-1 premium-input bg-white text-right text-sm py-2 px-1"
+                          className="col-span-4 md:col-span-2 premium-input bg-white text-right text-sm py-2 px-1"
                         />
                         <div className="col-span-4 md:col-span-2 text-right font-bold text-slate-800 text-sm pr-1">
                           ₹{item.total.toFixed(0)}
