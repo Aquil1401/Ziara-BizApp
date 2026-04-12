@@ -1,10 +1,77 @@
-// Server side API route used instead to protect API key
+export interface ParsedBillItem {
+  description: string;
+  quantity: number;
+  rate: number;
+  taxRate?: number;
+  taxAmount?: number;
+  hsnCode?: string;
+  total: number;
+}
+
+export interface ParsedBill {
+  invoiceNumber?: string;
+  date?: string;
+  customerName?: string;
+  customerAddress?: string;
+  customerPhone?: string;
+  supplier?: string;
+  items: ParsedBillItem[];
+  subtotal?: number;
+  taxAmount?: number;
+  grandTotal?: number;
+  notes?: string;
+}
 
 /**
- * Parses a bill file (image, PDF, or Word) using Gemini.
+ * Parses a bill file (image, PDF, or Word) using the secure server-side API Route.
  * Accepts a base64 data URL.
  */
 export const parseBillFileWithAI = async (fileDataUrl: string): Promise<ParsedBill | null> => {
+  const prompt = `You are an expert at reading invoices, sales bills, and receipts (images, PDFs, or Word documents) with a focus on Indian Taxation (GST).
+  
+Look carefully at this document and extract ALL information visible. If it is a PDF or Word document, read all pages if applicable.
+
+Return ONLY a valid JSON object (no markdown, no code fences, no explanation) with this EXACT structure:
+{
+  "invoiceNumber": "string or null",
+  "date": "YYYY-MM-DD format or null",
+  "customerName": "customer or buyer name or null",
+  "customerAddress": "customer address or location or null",
+  "customerPhone": "customer phone number or null",
+  "supplier": "supplier or seller name or null",
+  "items": [
+    {
+      "description": "product name exactly as written",
+      "hsnCode": "HSN/SAC code if visible or null",
+      "quantity": number,
+      "rate": number,
+      "taxRate": number (e.g. 18 for 18% GST),
+      "taxAmount": number,
+      "total": number (including tax)
+    }
+  ],
+  "subtotal": number (before tax),
+  "taxAmount": number (total tax amount),
+  "grandTotal": number or null,
+  "notes": "any additional remarks ONLY"
+}
+
+IMPORTANT rules for GST extraction:
+- Look for "HSN", "SAC", "GST%", "IGST", "CGST", "SGST".
+- taxRate should be the total GST percentage (e.g., if CGST 9% and SGST 9%, taxRate is 18).
+- Extract HSN code for each item if mentioned.
+- If individual tax is not mentioned but a total GST is shown, divide it proportionally among items or use the total fields.
+
+IMPORTANT layout rules for Indian handwritten bills:
+- The FIRST line often has a bill/invoice number (e.g. "173") and a date.
+- The SECOND line is the CUSTOMER NAME — extract this exactly.
+- The THIRD line is the CUSTOMER ADDRESS.
+- nouns should ONLY contain genuine extra remarks.
+- Extract ALL line items visible in the bill.
+- For Indian bills, "110/-" means 110 rupees.
+- If quantity is not written, default to 1.
+- Today's date if none found: ${new Date().toISOString().split('T')[0]}`;
+
   try {
     const response = await fetch('/api/parse-bill', {
       method: 'POST',
@@ -52,7 +119,7 @@ export const parseBillFileWithAI = async (fileDataUrl: string): Promise<ParsedBi
 
     return parsed;
   } catch (error) {
-    console.error('Gemini Vision Parse Error:', error);
+    console.error('Fetch Parse Error:', error);
     return null;
   }
 };
