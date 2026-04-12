@@ -37,17 +37,6 @@ export interface Customer {
   createdAt?: string;
 }
 
-export interface Sale {
-  id: string;
-  date: string;
-  customerId: string;
-  customerName: string;
-  productId: string;
-  productName: string;
-  quantity: number;
-  rate: number;
-  total: number;
-}
 
 export interface Purchase {
   id: string;

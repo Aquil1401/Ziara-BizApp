@@ -1,9 +1,9 @@
-import { Product, Customer, Sale, Purchase, BillScan, Invoice, Expense, LedgerEntry, BusinessInfo } from "../lib/types";
+import { Product, Customer, Purchase, BillScan, Invoice, Expense, LedgerEntry, BusinessInfo } from "../lib/types";
+import { syncPush, syncDelete, initialSyncFromSupabase } from "./syncService";
 
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   PRODUCTS: "products",
   CUSTOMERS: "customers",
-  SALES: "sales",
   PURCHASES: "purchases",
   BILL_SCANS: "bill_scans",
   EXPENSES: "expenses",
@@ -12,16 +12,27 @@ const STORAGE_KEYS = {
   BUSINESS_INFO: "business_info",
 };
 
+
 export const saveData = (key: string, data: any) => {
   if (typeof window !== "undefined") {
-    localStorage.setItem(key, JSON.stringify(data));
+    if (data === undefined) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, JSON.stringify(data));
+    }
   }
 };
 
 export const loadData = <T>(key: string): T[] => {
   if (typeof window !== "undefined") {
     const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
+    if (!data || data === "undefined") return [];
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.error(`Failed to parse local storage key ${key}:`, e);
+      return [];
+    }
   }
   return [];
 };
@@ -36,12 +47,14 @@ export const updateData = <T extends { id: string }>(key: string, updatedItem: T
     items.push(updatedItem);
     saveData(key, items);
   }
+  syncPush(key, updatedItem);
 };
 
 export const deleteData = (key: string, id: string) => {
   const items = loadData<{ id: string }>(key);
   const filtered = items.filter((item) => item.id !== id);
   saveData(key, filtered);
+  syncDelete(key, id);
 };
 
 // Product
@@ -53,10 +66,6 @@ export const deleteProduct = (id: string) => deleteData(STORAGE_KEYS.PRODUCTS, i
 export const getCustomers = () => loadData<Customer>(STORAGE_KEYS.CUSTOMERS);
 export const saveCustomer = (customer: Customer) => updateData(STORAGE_KEYS.CUSTOMERS, customer);
 export const deleteCustomer = (id: string) => deleteData(STORAGE_KEYS.CUSTOMERS, id);
-
-// Sales
-export const getSales = () => loadData<Sale>(STORAGE_KEYS.SALES);
-export const saveSale = (sale: Sale) => updateData(STORAGE_KEYS.SALES, sale);
 
 // Purchases
 export const getPurchases = () => loadData<Purchase>(STORAGE_KEYS.PURCHASES);
@@ -297,11 +306,18 @@ const DEFAULT_BUSINESS_INFO: BusinessInfo = {
 export const getBusinessInfo = (): BusinessInfo => {
   if (typeof window !== "undefined") {
     const data = localStorage.getItem(STORAGE_KEYS.BUSINESS_INFO);
-    return data ? JSON.parse(data) : DEFAULT_BUSINESS_INFO;
+    if (!data || data === "undefined") return DEFAULT_BUSINESS_INFO;
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.error('Failed to parse business info from local storage:', e);
+      return DEFAULT_BUSINESS_INFO;
+    }
   }
   return DEFAULT_BUSINESS_INFO;
 };
 
 export const saveBusinessInfo = (info: BusinessInfo) => {
   saveData(STORAGE_KEYS.BUSINESS_INFO, info);
+  syncPush(STORAGE_KEYS.BUSINESS_INFO, { id: "11111111-1111-1111-1111-111111111111", ...info });
 };

@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
-
+import DataSync from "@/components/DataSync";
 const inter = Inter({ subsets: ["latin"], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
@@ -45,6 +45,7 @@ export default function RootLayout({
           </div>
         </div>
         <BottomNav />
+        <DataSync />
       </body>
     </html>
   );
