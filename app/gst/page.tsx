@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { getSales, getPurchases, getInvoices, getBusinessInfo } from "@/utils/localStorageService";
-import { Sale, Purchase, Invoice, InvoiceItem, BusinessInfo } from "@/lib/types";
+import { getPurchases, getInvoices, getBusinessInfo } from "@/utils/localStorageService";
+import { Purchase, Invoice, InvoiceItem, BusinessInfo } from "@/lib/types";
 import { exportToExcel, exportToPDF } from "@/utils/exportService";
 import { FileText, Download, FileSpreadsheet, AlertCircle, Calculator, IndianRupee, LayoutDashboard, ShoppingCart, Tag, Calendar as CalendarIcon, CheckCircle2, Info, Copy, ChevronDown, Building, Shield } from "lucide-react";
 import ConfirmDialog from "@/components/ConfirmDialog";
