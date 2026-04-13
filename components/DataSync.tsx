@@ -3,11 +3,14 @@
 import { useEffect, useRef } from 'react';
 import { initialSyncFromSupabase } from '@/utils/syncService';
 import { saveData, loadData, getBusinessInfo, STORAGE_KEYS } from '@/utils/localStorageService';
+import { useAuth } from '@/components/AuthProvider';
 
 export default function DataSync() {
   const synced = useRef(false);
+  const { user } = useAuth();
 
   useEffect(() => {
+    if (!user) return; // Only sync when authenticated
     if (synced.current) return;
     synced.current = true;
 
@@ -31,7 +34,7 @@ export default function DataSync() {
     };
 
     syncAll();
-  }, []);
+  }, [user]);
 
   return null;
 }

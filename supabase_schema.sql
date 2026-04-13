@@ -128,28 +128,38 @@ CREATE TABLE business_info (
 -- Please create a storage bucket named "product_images" and make it public in the Supabase Dashboard
 -- Please create a storage bucket named "bill_scans" and make it public in the Supabase Dashboard
 
--- Set up Row Level Security (RLS) - Example for allowing all access (You may want to restrict this depending on your auth setup)
+-- Set up Row Level Security (RLS) — Only authenticated users can access data
+-- Run this in Supabase SQL Editor to update from the old open policies
+
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable all for all users" ON products FOR ALL USING (true);
+DROP POLICY IF EXISTS "Enable all for all users" ON products;
+CREATE POLICY "Authenticated users only" ON products FOR ALL USING (auth.uid() IS NOT NULL);
 
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable all for all users" ON customers FOR ALL USING (true);
-
+DROP POLICY IF EXISTS "Enable all for all users" ON customers;
+CREATE POLICY "Authenticated users only" ON customers FOR ALL USING (auth.uid() IS NOT NULL);
 
 ALTER TABLE purchases ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable all for all users" ON purchases FOR ALL USING (true);
+DROP POLICY IF EXISTS "Enable all for all users" ON purchases;
+CREATE POLICY "Authenticated users only" ON purchases FOR ALL USING (auth.uid() IS NOT NULL);
 
 ALTER TABLE bill_scans ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable all for all users" ON bill_scans FOR ALL USING (true);
+DROP POLICY IF EXISTS "Enable all for all users" ON bill_scans;
+CREATE POLICY "Authenticated users only" ON bill_scans FOR ALL USING (auth.uid() IS NOT NULL);
 
 ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable all for all users" ON expenses FOR ALL USING (true);
+DROP POLICY IF EXISTS "Enable all for all users" ON expenses;
+CREATE POLICY "Authenticated users only" ON expenses FOR ALL USING (auth.uid() IS NOT NULL);
 
 ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable all for all users" ON invoices FOR ALL USING (true);
+DROP POLICY IF EXISTS "Enable all for all users" ON invoices;
+CREATE POLICY "Authenticated users only" ON invoices FOR ALL USING (auth.uid() IS NOT NULL);
 
 ALTER TABLE ledger_entries ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable all for all users" ON ledger_entries FOR ALL USING (true);
+DROP POLICY IF EXISTS "Enable all for all users" ON ledger_entries;
+CREATE POLICY "Authenticated users only" ON ledger_entries FOR ALL USING (auth.uid() IS NOT NULL);
 
 ALTER TABLE business_info ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Enable all for all users" ON business_info FOR ALL USING (true);
+DROP POLICY IF EXISTS "Enable all for all users" ON business_info;
+CREATE POLICY "Authenticated users only" ON business_info FOR ALL USING (auth.uid() IS NOT NULL);
+

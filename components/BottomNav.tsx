@@ -2,21 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ScanLine, ShoppingCart, Package, Archive, BookOpen, BarChart3, Users, FileText, Wallet, Settings, Receipt } from "lucide-react";
+import { Home, ScanLine, Package, Archive, BookOpen, BarChart3, Users, FileText, Wallet, Settings, Receipt, LogOut } from "lucide-react";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { signOut } = useAuth();
 
   const links = [
     { name: "Home", href: "/", icon: Home },
     { name: "Scan", href: "/scan", icon: ScanLine },
-    { name: "Sales", href: "/sales", icon: ShoppingCart },
+    { name: "Invoices", href: "/invoice", icon: FileText },
     { name: "Purchases", href: "/purchases", icon: Package },
     { name: "Inventory", href: "/inventory", icon: Archive },
     { name: "Customers", href: "/customers", icon: Users },
     { name: "Ledger", href: "/ledger", icon: BookOpen },
     { name: "Expenses", href: "/expenses", icon: Wallet },
-    { name: "Invoices", href: "/invoice", icon: FileText },
     { name: "GST", href: "/gst", icon: Receipt },
     { name: "Reports", href: "/reports", icon: BarChart3 },
     { name: "Settings", href: "/settings", icon: Settings },
@@ -46,6 +47,15 @@ export default function BottomNav() {
               </Link>
             );
           })}
+
+          {/* Logout button */}
+          <button
+            onClick={signOut}
+            className="flex flex-col items-center justify-center w-[72px] h-[60px] flex-shrink-0 rounded-2xl text-rose-400 hover:text-rose-600 hover:bg-rose-50/50 transition-all duration-300 scale-95"
+          >
+            <LogOut size={22} className="mb-1 stroke-[2px]" />
+            <span className="text-[10px] font-medium tracking-wide">Logout</span>
+          </button>
         </div>
       </div>
     </div>

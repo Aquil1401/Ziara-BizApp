@@ -29,32 +29,33 @@ export default function Dashboard() {
       setTotalSales(salesTotal);
 
       // Calculate today's sales (from today's invoices)
-      const todaysInvoices = invoices.filter((inv) => inv.date.startsWith(today));
-      const salesToday = todaysInvoices.reduce((sum, inv) => sum + inv.total, 0);
+      const todaysInvoices = invoices.filter((inv) => inv.date && inv.date.startsWith(today));
+      const salesToday = todaysInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
       setTodaySales(salesToday);
 
       // Calculate total profit
       let profit = 0;
       invoices.forEach((inv) => {
+        if (!inv.items) return;
         inv.items.forEach((item) => {
           // Find matching product by name (case-insensitive) to get cost
-          const product = products.find(p => p.name.toLowerCase() === item.description.toLowerCase());
+          const product = products.find(p => p.name && item.description && p.name.toLowerCase() === item.description.toLowerCase());
           let avgCost = 0;
           
           if (product) {
             const productPurchases = purchases.filter((p) => p.productId === product.id);
             avgCost = productPurchases.length > 0 
-              ? productPurchases.reduce((sum, p) => sum + p.costPrice, 0) / productPurchases.length 
+              ? productPurchases.reduce((sum, p) => sum + (p.costPrice || 0), 0) / productPurchases.length 
               : 0;
           }
           
-          profit += item.total - (avgCost * item.quantity);
+          profit += (item.total || 0) - (avgCost * (item.quantity || 0));
         });
       });
       setTotalProfit(profit);
 
       // Pending payments
-      const pending = customers.reduce((sum, c) => sum + c.balance, 0);
+      const pending = customers.reduce((sum, c) => sum + (c.balance || 0), 0);
       setPendingPayments(pending);
 
       // Low stock
