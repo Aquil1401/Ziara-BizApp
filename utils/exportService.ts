@@ -107,12 +107,14 @@ export const exportInvoiceToPDF = async (
     phone: string; 
     email: string; 
     gstin?: string;
-    bankDetails: {
+    bankDetails?: {
       name: string;
       accountName: string;
       accountNo: string;
       branch: string;
       ifsc: string;
+      upiId?: string;
+      upiQrCode?: string;
     }
   }
 ) => {
