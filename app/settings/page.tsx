@@ -375,9 +375,9 @@ export default function SettingsPage() {
           </div>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between"><span className="text-slate-500 font-medium">App Name</span><span className="font-semibold text-slate-800">BizApp</span></div>
-            <div className="flex justify-between"><span className="text-slate-500 font-medium">Version</span><span className="font-semibold text-slate-800">1.0.0 (Phase 5)</span></div>
-            <div className="flex justify-between"><span className="text-slate-500 font-medium">Storage Type</span><span className="font-semibold text-slate-800">Browser LocalStorage</span></div>
-            <div className="flex justify-between"><span className="text-slate-500 font-medium">Mode</span><span className="font-semibold text-emerald-600">Offline-First PWA</span></div>
+            <div className="flex justify-between"><span className="text-slate-500 font-medium">Version</span><span className="font-semibold text-slate-800">1.0.0</span></div>
+            <div className="flex justify-between"><span className="text-slate-500 font-medium">Storage Type</span><span className="font-semibold text-slate-800">Supabase Cloud Database</span></div>
+            <div className="flex justify-between"><span className="text-slate-500 font-medium">Mode</span><span className="font-semibold text-indigo-600">Cloud-Synced PWA</span></div>
           </div>
         </div>
 

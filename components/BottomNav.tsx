@@ -10,16 +10,16 @@ export default function BottomNav() {
   const { signOut } = useAuth();
 
   const links = [
-    { name: "Home", href: "/", icon: Home },
-    { name: "Scan", href: "/scan", icon: ScanLine },
+    { name: "Dashboard", href: "/", icon: Home },
+    { name: "Scan Bill", href: "/scan", icon: ScanLine },
     { name: "Invoices", href: "/invoice", icon: FileText },
-    { name: "Purchases", href: "/purchases", icon: Package },
-    { name: "Inventory", href: "/inventory", icon: Archive },
     { name: "Customers", href: "/customers", icon: Users },
+    { name: "Analytics", href: "/reports", icon: BarChart3 },
+    { name: "Inventory", href: "/inventory", icon: Archive },
+    { name: "Purchases", href: "/purchases", icon: Package },
     { name: "Ledger", href: "/ledger", icon: BookOpen },
     { name: "Expenses", href: "/expenses", icon: Wallet },
-    { name: "GST", href: "/gst", icon: Receipt },
-    { name: "Reports", href: "/reports", icon: BarChart3 },
+    { name: "GST Report", href: "/gst", icon: Receipt },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 

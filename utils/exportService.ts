@@ -281,14 +281,28 @@ export const exportInvoiceToPDF = async (
   
   doc.setTextColor(30, 41, 59);
   doc.setFontSize(8);
-  doc.text(`Bank: ${businessInfo.bankDetails.name}`, margin + footerColWidth + 3, currentY + 10);
-  doc.text(`A/c: ${businessInfo.bankDetails.accountNo}`, margin + footerColWidth + 3, currentY + 14);
-  doc.text(`IFSC: ${businessInfo.bankDetails.ifsc}`, margin + footerColWidth + 3, currentY + 18);
+  doc.text(`Bank: ${businessInfo.bankDetails?.name || "-"}`, margin + footerColWidth + 3, currentY + 10);
+  doc.text(`A/c: ${businessInfo.bankDetails?.accountNo || "-"}`, margin + footerColWidth + 3, currentY + 14);
+  doc.text(`IFSC: ${businessInfo.bankDetails?.ifsc || "-"}`, margin + footerColWidth + 3, currentY + 18);
+  if (businessInfo.bankDetails?.upiId) {
+    doc.text(`UPI: ${businessInfo.bankDetails.upiId}`, margin + footerColWidth + 3, currentY + 22);
+  }
+
+  if (businessInfo.bankDetails?.upiQrCode) {
+    try {
+      const qrImage = businessInfo.bankDetails.upiQrCode;
+      let format = 'PNG';
+      if (qrImage.startsWith('data:image/jpeg')) format = 'JPEG';
+      doc.addImage(qrImage, format, pageWidth - margin - 22, currentY + 6, 16, 16);
+    } catch (e) {
+      console.error("Failed to add QR code", e);
+    }
+  }
 
   doc.setTextColor(148, 163, 184);
-  doc.text(`For ${businessInfo.name.toUpperCase()}`, pageWidth - margin - 3, currentY + 25, { align: "right" });
+  doc.text(`For ${businessInfo.name?.toUpperCase() || "BUSINESS"}`, pageWidth - margin - 3, currentY + 26, { align: "right" });
   doc.text("Authorized Signatory", pageWidth - margin - 3, currentY + 32, { align: "right" });
-  doc.line(pageWidth - margin - 30, currentY + 30, pageWidth - margin - 3, currentY + 30);
+  doc.line(pageWidth - margin - 35, currentY + 29, pageWidth - margin - 3, currentY + 29);
 
   // 8. DISCLAIMER
   doc.setFont("helvetica", "italic");
