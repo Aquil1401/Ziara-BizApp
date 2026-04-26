@@ -175,11 +175,17 @@ export default function CustomersPage() {
         </div>
       </header>
 
-      {/* Add / Edit Form */}
+      {/* Add / Edit Form Modal */}
       {showForm && (
-        <div className="premium-card p-6 md:p-8 mb-8 relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-blue-500" />
-          <h2 className="text-lg font-bold text-slate-800 mb-6">{editingId ? "Edit Customer Details" : "Register New Customer"}</h2>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="absolute inset-0" onClick={resetForm} />
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
+            <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-6 py-5 flex items-center justify-between">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-blue-500" />
+              <h2 className="text-xl font-bold text-slate-800">{editingId ? "Edit Customer Details" : "Register New Customer"}</h2>
+              <button type="button" onClick={resetForm} className="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-xl transition-colors"><X size={18} /></button>
+            </div>
+            <div className="p-6 md:p-8">
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div className="lg:col-span-2">
               <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-2">Full Name *</label>
@@ -243,6 +249,8 @@ export default function CustomersPage() {
               </button>
             </div>
           </form>
+            </div>
+          </div>
         </div>
       )}
 

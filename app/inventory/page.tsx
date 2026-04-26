@@ -32,6 +32,7 @@ export default function InventoryPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [viewImage, setViewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Dialog State
@@ -356,11 +357,17 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {/* Add / Edit Form */}
+      {/* Add / Edit Form Modal */}
       {showForm && (
-        <div className="premium-card p-6 mb-8 relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-blue-500" />
-          <h2 className="text-base font-bold text-slate-800 mb-5">{editingId ? "Edit Product" : "New Product"}</h2>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="absolute inset-0" onClick={resetForm} />
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
+            <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-6 py-5 flex items-center justify-between">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-blue-500" />
+              <h2 className="text-xl font-bold text-slate-800">{editingId ? "Edit Product" : "New Product"}</h2>
+              <button type="button" onClick={resetForm} className="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-xl transition-colors"><X size={18} /></button>
+            </div>
+            <div className="p-6">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               <div className="lg:col-span-2">
@@ -502,6 +509,8 @@ export default function InventoryPage() {
               <button type="submit" className="md:w-auto px-10 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold rounded-xl shadow-md transition-all"><Check size={15} className="inline mr-1.5" />{editingId ? "Save Changes" : "Add Product"}</button>
             </div>
           </form>
+            </div>
+          </div>
         </div>
       )}
 
@@ -567,7 +576,11 @@ export default function InventoryPage() {
                         />
                       </td>
                       <td className="px-5 py-4 text-center">
-                        <div className={`w-12 h-12 mx-auto rounded-xl border flex items-center justify-center overflow-hidden bg-white shadow-sm transition-transform group-hover:scale-110 ${expired ? "border-rose-200" : nearExpiry ? "border-amber-200" : "border-slate-100"}`}>
+                        <div 
+                          className={`w-12 h-12 mx-auto rounded-xl border flex items-center justify-center overflow-hidden bg-white shadow-sm transition-transform group-hover:scale-110 ${p.image ? "cursor-pointer hover:ring-2 hover:ring-indigo-400" : ""} ${expired ? "border-rose-200" : nearExpiry ? "border-amber-200" : "border-slate-100"}`}
+                          onClick={() => p.image && setViewImage(p.image)}
+                          title={p.image ? "Click to view image" : ""}
+                        >
                           {p.image ? (
                             <img src={p.image} className="w-full h-full object-cover" />
                           ) : (
@@ -675,6 +688,22 @@ export default function InventoryPage() {
         onConfirm={dialogState.onConfirm}
         onCancel={() => setDialogState(prev => ({ ...prev, isOpen: false }))}
       />
+
+      {/* Image Preview Modal */}
+      {viewImage && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="absolute inset-0" onClick={() => setViewImage(null)} />
+          <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center animate-in zoom-in-95 duration-300">
+            <button 
+              onClick={() => setViewImage(null)} 
+              className="absolute -top-12 right-0 p-2 text-white/70 hover:text-white transition-colors"
+            >
+              <X size={28} />
+            </button>
+            <img src={viewImage} alt="Product preview" className="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain bg-white" />
+          </div>
+        </div>
+      )}
 
       <InputDialog
         isOpen={inputDialogState.isOpen}

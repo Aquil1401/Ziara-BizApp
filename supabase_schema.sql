@@ -163,3 +163,49 @@ ALTER TABLE business_info ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Enable all for all users" ON business_info;
 CREATE POLICY "Authenticated users only" ON business_info FOR ALL USING (auth.uid() IS NOT NULL);
 
+-- ==========================================
+-- STORAGE POLICIES
+-- ==========================================
+-- To fix the "new row violates row-level security policy" error during image uploads,
+-- you must run these policies in the Supabase SQL editor to allow inserts into the storage buckets.
+
+-- For product_images bucket
+CREATE POLICY "Allow authenticated uploads to product_images"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'product_images');
+
+CREATE POLICY "Allow authenticated updates to product_images"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'product_images');
+
+CREATE POLICY "Allow public read from product_images"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'product_images');
+
+CREATE POLICY "Allow authenticated deletes from product_images"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'product_images');
+
+-- For bill_scans bucket
+CREATE POLICY "Allow authenticated uploads to bill_scans"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'bill_scans');
+
+CREATE POLICY "Allow authenticated updates to bill_scans"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'bill_scans');
+
+CREATE POLICY "Allow public read from bill_scans"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'bill_scans');
+
+CREATE POLICY "Allow authenticated deletes from bill_scans"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'bill_scans');
+

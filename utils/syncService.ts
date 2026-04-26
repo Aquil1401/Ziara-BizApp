@@ -5,7 +5,7 @@ const camelToSnake = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter
 const convertObjectKeysToSnakeCase = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(v => convertObjectKeysToSnakeCase(v));
-  } else if (obj !== null && obj.constructor === Object) {
+  } else if (obj !== null && obj !== undefined && obj.constructor === Object) {
     return Object.keys(obj).reduce((result, key) => {
       // Treat customFields or items (inside invoice) properly or leave them as jsonb
       result[camelToSnake(key)] = convertObjectKeysToSnakeCase(obj[key]);
@@ -107,7 +107,7 @@ const snakeToCamel = (str: string) => str.replace(/_([a-z])/g, (g) => g[1].toUpp
 const convertObjectKeysToCamelCase = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(v => convertObjectKeysToCamelCase(v));
-  } else if (obj !== null && obj.constructor === Object) {
+  } else if (obj !== null && obj !== undefined && obj.constructor === Object) {
     return Object.keys(obj).reduce((result, key) => {
       result[snakeToCamel(key)] = convertObjectKeysToCamelCase(obj[key]);
       return result;

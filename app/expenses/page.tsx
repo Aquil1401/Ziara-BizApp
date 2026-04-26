@@ -129,11 +129,17 @@ export default function ExpensesPage() {
         </button>
       </header>
 
-      {/* Add Form */}
+      {/* Add Form Modal */}
       {showForm && (
-        <div className="premium-card p-6 mb-8 relative overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 to-orange-500" />
-          <h2 className="text-base font-bold text-slate-800 mb-5">New Expense</h2>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="absolute inset-0" onClick={() => setShowForm(false)} />
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
+            <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-6 py-5 flex items-center justify-between">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 to-orange-500" />
+              <h2 className="text-xl font-bold text-slate-800">New Expense</h2>
+              <button type="button" onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-xl transition-colors"><X size={18} /></button>
+            </div>
+            <div className="p-6">
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5">
             <div className="md:col-span-2 lg:col-span-3">
               <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-3">Expense Type</label>
@@ -205,6 +211,8 @@ export default function ExpensesPage() {
               <button type="submit" className="px-8 py-2.5 bg-gradient-to-r from-rose-600 to-orange-600 text-white font-semibold rounded-xl shadow-md transition-all"><Check size={15} className="inline mr-1.5" />Save Expense</button>
             </div>
           </form>
+            </div>
+          </div>
         </div>
       )}
 
