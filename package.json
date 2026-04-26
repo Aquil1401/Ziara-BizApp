@@ -12,6 +12,7 @@
     "@google/genai": "^1.44.0",
     "@supabase/supabase-js": "^2.103.0",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.577.0",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

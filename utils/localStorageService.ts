@@ -1,5 +1,6 @@
 import { Product, Customer, Purchase, BillScan, Invoice, Expense, LedgerEntry, BusinessInfo } from "../lib/types";
 import { syncPush, syncDelete, initialSyncFromSupabase } from "./syncService";
+import { encryptData, decryptData } from "./encryption";
 
 export const STORAGE_KEYS = {
   PRODUCTS: "products",
@@ -18,17 +19,22 @@ export const saveData = (key: string, data: any) => {
     if (data === undefined) {
       localStorage.removeItem(key);
     } else {
-      localStorage.setItem(key, JSON.stringify(data));
+      localStorage.setItem(key, encryptData(data));
     }
   }
 };
 
 export const loadData = <T>(key: string): T[] => {
   if (typeof window !== "undefined") {
-    const data = localStorage.getItem(key);
-    if (!data || data === "undefined") return [];
+    const rawData = localStorage.getItem(key);
+    if (!rawData || rawData === "undefined") return [];
     try {
-      return JSON.parse(data);
+      const parsed = decryptData(rawData);
+      // Auto-migrate if data was previously unencrypted
+      if (rawData.startsWith('[') || rawData.startsWith('{')) {
+        saveData(key, parsed);
+      }
+      return parsed;
     } catch (e) {
       console.error(`Failed to parse local storage key ${key}:`, e);
       return [];
@@ -39,15 +45,20 @@ export const loadData = <T>(key: string): T[] => {
 
 export const updateData = <T extends { id: string }>(key: string, updatedItem: T) => {
   const items = loadData<T>(key);
-  const index = items.findIndex((item) => item.id === updatedItem.id);
+  const itemWithTimestamp = {
+    ...updatedItem,
+    updatedAt: new Date().toISOString()
+  };
+  
+  const index = items.findIndex((item) => item.id === itemWithTimestamp.id);
   if (index !== -1) {
-    items[index] = updatedItem;
+    items[index] = itemWithTimestamp;
     saveData(key, items);
   } else {
-    items.push(updatedItem);
+    items.push(itemWithTimestamp);
     saveData(key, items);
   }
-  syncPush(key, updatedItem);
+  syncPush(key, itemWithTimestamp);
 };
 
 export const deleteData = (key: string, id: string) => {
@@ -305,10 +316,14 @@ const DEFAULT_BUSINESS_INFO: BusinessInfo = {
 
 export const getBusinessInfo = (): BusinessInfo => {
   if (typeof window !== "undefined") {
-    const data = localStorage.getItem(STORAGE_KEYS.BUSINESS_INFO);
-    if (!data || data === "undefined") return DEFAULT_BUSINESS_INFO;
+    const rawData = localStorage.getItem(STORAGE_KEYS.BUSINESS_INFO);
+    if (!rawData || rawData === "undefined") return DEFAULT_BUSINESS_INFO;
     try {
-      return JSON.parse(data);
+      const parsed = decryptData(rawData);
+      if (rawData.startsWith('{')) {
+        saveData(STORAGE_KEYS.BUSINESS_INFO, parsed);
+      }
+      return parsed;
     } catch (e) {
       console.error('Failed to parse business info from local storage:', e);
       return DEFAULT_BUSINESS_INFO;

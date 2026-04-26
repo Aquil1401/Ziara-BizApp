@@ -82,6 +82,30 @@ export const syncPush = async (table: string, payload: any) => {
     }
 
     const snakeCasePayload = convertObjectKeysToSnakeCase(finalPayload);
+    
+    // Conflict Resolution: Read before write
+    if (snakeCasePayload.updated_at) {
+      try {
+        const { data: remoteData, error: fetchError } = await supabase
+          .from(table)
+          .select('updated_at')
+          .eq('id', payload.id)
+          .maybeSingle();
+
+        if (!fetchError && remoteData && remoteData.updated_at) {
+          const remoteTime = new Date(remoteData.updated_at).getTime();
+          const localTime = new Date(snakeCasePayload.updated_at).getTime();
+          
+          if (remoteTime > localTime) {
+            console.log(`Sync Conflict: Remote data for ${table} (${payload.id}) is newer. Skipping push to avoid overwriting.`);
+            return; // Abort push
+          }
+        }
+      } catch (e) {
+        console.warn("Could not fetch remote updated_at for conflict resolution", e);
+      }
+    }
+
     const { error } = await supabase.from(table).upsert(snakeCasePayload, { onConflict: 'id' });
     if (error) {
       console.error(`Supabase Sync Error [upsert to ${table}]:`, error.message);

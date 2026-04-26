@@ -21,6 +21,7 @@ export interface Product {
   image?: string; // Base64 encoded image
   category?: string;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Customer {
@@ -35,6 +36,7 @@ export interface Customer {
   balance: number;
   status?: 'active' | 'inactive' | 'left' | 'unavailable';
   createdAt?: string;
+  updatedAt?: string;
 }
 
 
@@ -50,6 +52,7 @@ export interface Purchase {
   taxAmount?: number;
   hsnCode?: string;
   total: number;
+  updatedAt?: string;
 }
 
 export interface BillScan {
@@ -58,6 +61,7 @@ export interface BillScan {
   imageUrl: string;
   extractedText: string;
   parsedData: any;
+  updatedAt?: string;
 }
 
 export interface Expense {
@@ -69,6 +73,7 @@ export interface Expense {
   type?: "individual" | "monthly";
   startDate?: string;
   endDate?: string;
+  updatedAt?: string;
 }
 
 export interface InvoiceItem {
@@ -90,6 +95,7 @@ export interface LedgerEntry {
   amount: number;
   type: 'debit' | 'credit'; // debit = credit given (increases balance), credit = payment received (decreases balance)
   description: string;
+  updatedAt?: string;
 }
 
 export interface Invoice {
@@ -128,6 +134,7 @@ export interface Invoice {
     upiId?: string;
     upiQrCode?: string;
   };
+  updatedAt?: string;
 }
 
 export interface BusinessInfo {

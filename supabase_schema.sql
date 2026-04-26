@@ -18,7 +18,8 @@ CREATE TABLE products (
   gst_rate float8 DEFAULT 0,
   image text,
   category text,
-  created_at timestamptz DEFAULT now()
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
 
 -- 2. Customers Table
@@ -33,7 +34,8 @@ CREATE TABLE customers (
   payments_received float8 DEFAULT 0,
   balance float8 DEFAULT 0,
   status text,
-  created_at timestamptz DEFAULT now()
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
 
 -- 3. Purchases Table
@@ -48,7 +50,8 @@ CREATE TABLE purchases (
   tax_rate float8,
   tax_amount float8,
   hsn_code text,
-  total float8 NOT NULL
+  total float8 NOT NULL,
+  updated_at timestamptz DEFAULT now()
 );
 
 -- 5. Bill Scans Table
@@ -57,7 +60,8 @@ CREATE TABLE bill_scans (
   date text NOT NULL,
   image_url text,
   extracted_text text,
-  parsed_data jsonb
+  parsed_data jsonb,
+  updated_at timestamptz DEFAULT now()
 );
 
 -- 6. Expenses Table
@@ -69,7 +73,8 @@ CREATE TABLE expenses (
   amount float8 NOT NULL,
   type text,
   start_date text,
-  end_date text
+  end_date text,
+  updated_at timestamptz DEFAULT now()
 );
 
 -- 7. Invoices Table
@@ -99,7 +104,8 @@ CREATE TABLE invoices (
   dispatched_through text,
   destination text,
   terms_of_delivery text,
-  bank_details jsonb
+  bank_details jsonb,
+  updated_at timestamptz DEFAULT now()
 );
 
 -- 8. Ledger Entries Table
@@ -110,7 +116,8 @@ CREATE TABLE ledger_entries (
   date text NOT NULL,
   amount float8 NOT NULL,
   type text NOT NULL,
-  description text
+  description text,
+  updated_at timestamptz DEFAULT now()
 );
 
 -- 9. Business Info Table
@@ -121,7 +128,8 @@ CREATE TABLE business_info (
   phone text,
   email text,
   gstin text,
-  bank_details jsonb
+  bank_details jsonb,
+  updated_at timestamptz DEFAULT now()
 );
 
 -- Supabase Storage Setup
